@@ -62,7 +62,7 @@
                         <i class="fa-solid fa-book-open w-6"></i> Masaj Kayıtları
                     </a>
                     <a href="{{ route('reception.expenses.index') }}" class="flex items-center px-4 py-3 rounded-lg hover:bg-gray-800 transition-colors {{ request()->routeIs('reception.expenses.*') ? 'bg-gray-800 border-l-4 border-green-400' : '' }}">
-                        <i class="fa-solid fa-money-bill-wave w-6"></i> Günlük Giderler
+                        <i class="fa-solid fa-money-bill-transfer w-6"></i> Günlük Gelir / Gider
                     </a>
                     <a href="{{ route('daily.report') }}" class="flex items-center px-4 py-3 rounded-lg hover:bg-gray-800 transition-colors {{ request()->routeIs('daily.report') ? 'bg-gray-800 border-l-4 border-green-400' : '' }}">
                         <i class="fa-solid fa-calendar-day w-6"></i> Gün Raporu

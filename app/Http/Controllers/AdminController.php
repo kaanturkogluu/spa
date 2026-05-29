@@ -171,8 +171,11 @@ class AdminController extends Controller
         $incomeKrediKarti = $records->where('payment_method', 'kredi_karti')->sum('final_price');
         $incomeHavale = $records->where('payment_method', 'havale')->sum('final_price');
         
-        $totalIncome = $incomeNakit + $incomeKrediKarti + $incomeHavale;
-        $totalExpense = $expenses->sum('amount');
+        // External Incomes
+        $externalIncome = $expenses->where('type', 'income')->sum('amount');
+
+        $totalIncome = $incomeNakit + $incomeKrediKarti + $incomeHavale + $externalIncome;
+        $totalExpense = $expenses->where('type', 'expense')->sum('amount');
         $netBalance = $totalIncome - $totalExpense;
 
         // Staff Premiums
@@ -228,11 +231,13 @@ class AdminController extends Controller
         $data = $request->validate([
             'name' => 'required|string|max:255',
             'amount' => 'required|numeric|min:0.01',
+            'type' => 'required|in:income,expense'
         ]);
         
         $data['created_by'] = \Illuminate\Support\Facades\Auth::id();
         \App\Models\Expense::create($data);
 
-        return back()->with('success', 'Gider eklendi.');
+        $msg = $data['type'] == 'income' ? 'Gelir eklendi.' : 'Gider eklendi.';
+        return back()->with('success', $msg);
     }
 }

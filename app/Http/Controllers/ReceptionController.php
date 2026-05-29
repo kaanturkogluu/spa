@@ -15,6 +15,7 @@ class ReceptionController extends Controller
     {
         $todayRecords = MassageRecord::whereDate('created_at', today())->count();
         $todayExpenses = Expense::whereDate('created_at', today())
+            ->where('type', 'expense')
             ->whereDoesntHave('creator', function($q) {
                 $q->where('role', 'admin');
             })->sum('amount');
@@ -156,11 +157,13 @@ class ReceptionController extends Controller
         $data = $request->validate([
             'name' => 'required|string|max:255',
             'amount' => 'required|numeric|min:0.01',
+            'type' => 'required|in:income,expense'
         ]);
         
         $data['created_by'] = Auth::id();
         Expense::create($data);
 
-        return back()->with('success', 'Gider eklendi.');
+        $msg = $data['type'] == 'income' ? 'Gelir eklendi.' : 'Gider eklendi.';
+        return back()->with('success', $msg);
     }
 }

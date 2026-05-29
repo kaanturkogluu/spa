@@ -8,7 +8,7 @@ class Expense extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'amount', 'created_by'];
+    protected $fillable = ['name', 'amount', 'type', 'created_by'];
 
     public function creator() { return $this->belongsTo(User::class, 'created_by'); }
 }

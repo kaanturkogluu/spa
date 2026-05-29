@@ -26,8 +26,8 @@
                     Temizle
                 </a>
                 @endif
-                <button type="button" onclick="document.getElementById('addExpenseModal').classList.remove('hidden')" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-medium shadow transition-colors text-sm whitespace-nowrap">
-                    <i class="fa-solid fa-plus mr-1"></i> Gider Ekle
+                <button type="button" onclick="document.getElementById('addExpenseModal').classList.remove('hidden')" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium shadow transition-colors text-sm whitespace-nowrap">
+                    <i class="fa-solid fa-plus mr-1"></i> Yeni İşlem Ekle
                 </button>
             </div>
         </form>
@@ -208,26 +208,39 @@
 
 <!-- Add Expense Modal for Admin -->
 <div id="addExpenseModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center">
-    <div class="bg-white rounded-2xl w-full max-w-md p-6 m-4 shadow-xl border-t-4 border-red-500">
+    <div class="bg-white rounded-2xl w-full max-w-md p-6 m-4 shadow-xl border-t-4 border-blue-500">
         <div class="flex justify-between items-center mb-4">
-            <h3 class="text-xl font-bold text-gray-800">Cari Gider Ekle</h3>
+            <h3 class="text-xl font-bold text-gray-800">Cari İşlem Ekle</h3>
             <button onclick="document.getElementById('addExpenseModal').classList.add('hidden')" class="text-gray-400 hover:text-gray-600"><i class="fa-solid fa-times text-xl"></i></button>
         </div>
         
         <form action="{{ route('admin.cari.expense') }}" method="POST" class="space-y-4">
             @csrf
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Gider Adı / Açıklama</label>
-                <input type="text" name="name" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500">
+                <label class="block text-sm font-medium text-gray-700 mb-2">İşlem Türü</label>
+                <div class="flex space-x-4">
+                    <label class="inline-flex items-center">
+                        <input type="radio" name="type" value="income" class="form-radio text-green-600 h-4 w-4" required>
+                        <span class="ml-2 text-gray-700">Gelir Ekle</span>
+                    </label>
+                    <label class="inline-flex items-center">
+                        <input type="radio" name="type" value="expense" class="form-radio text-red-600 h-4 w-4" checked required>
+                        <span class="ml-2 text-gray-700">Gider Ekle</span>
+                    </label>
+                </div>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">İşlem Adı / Açıklama</label>
+                <input type="text" name="name" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
             </div>
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Tutar (₺)</label>
-                <input type="number" step="0.01" name="amount" required min="0.01" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500">
+                <input type="number" step="0.01" name="amount" required min="0.01" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
             </div>
             
             <div class="pt-4 flex justify-end space-x-2">
                 <button type="button" onclick="document.getElementById('addExpenseModal').classList.add('hidden')" class="px-4 py-2 text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg">İptal</button>
-                <button type="submit" class="px-4 py-2 text-white bg-red-600 hover:bg-red-700 rounded-lg font-medium">Gideri Ekle</button>
+                <button type="submit" class="px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded-lg font-medium">Kaydet</button>
             </div>
         </form>
     </div>
