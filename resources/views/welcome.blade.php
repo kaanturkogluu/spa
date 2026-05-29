@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zenith SPA & Masaj Salonu</title>
+    <title>Royal Spa Masaj</title>
+    <link rel="icon" href="{{ asset('logo.jpg') }}" type="image/jpeg">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -29,7 +30,8 @@
             <div class="flex justify-between items-center h-20">
                 <div class="flex items-center">
                     <a href="#" class="text-2xl font-bold font-serif text-green-800 flex items-center tracking-wide">
-                        <i class="fa-solid fa-leaf text-green-600 mr-2"></i> ZENITH <span class="text-gray-500 font-light ml-2 text-xl hidden sm:block">SPA</span>
+                        <img src="{{ asset('logo.jpg') }}" alt="Royal Spa" class="h-12 w-auto mr-2 rounded-full shadow-sm" onerror="this.outerHTML='<i class=\'fa-solid fa-leaf text-green-600 mr-2\'></i>'"> 
+                        ROYAL SPA <span class="text-gray-500 font-light ml-2 text-xl hidden sm:block">MASAJ</span>
                     </a>
                 </div>
                 
@@ -82,7 +84,9 @@
             <p class="mt-4 text-xl md:text-2xl text-gray-200 max-w-3xl mx-auto font-light drop-shadow mb-10">Günlük hayatın stresinden uzaklaşın. Profesyonel terapistlerimiz eşliğinde eşsiz bir SPA deneyimi sizi bekliyor.</p>
             <div class="flex flex-col sm:flex-row justify-center gap-4">
                 <a href="#services" class="bg-green-600 hover:bg-green-500 text-white px-8 py-4 rounded-full text-lg font-medium transition-colors shadow-lg">Paketlerimizi İnceleyin</a>
-                <a href="#contact" class="bg-transparent border-2 border-white hover:bg-white hover:text-gray-900 text-white px-8 py-4 rounded-full text-lg font-medium transition-colors">İletişime Geç</a>
+                <a href="https://wa.me/905444716589" target="_blank" class="bg-[#25D366] hover:bg-green-500 text-white px-8 py-4 rounded-full text-lg font-medium transition-colors shadow-lg flex items-center justify-center">
+                    <i class="fa-brands fa-whatsapp text-2xl mr-2"></i> WhatsApp'tan Rezervasyon
+                </a>
             </div>
         </div>
     </section>
@@ -101,7 +105,7 @@
                     <h4 class="text-green-600 font-semibold tracking-wider uppercase mb-2">Hakkımızda</h4>
                     <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-6 font-serif">Huzurun <br><span class="italic text-green-800">Yeni Adresi</span></h2>
                     <p class="text-gray-600 text-lg mb-6 leading-relaxed">
-                        Zenith SPA, bedeninizin ve ruhunuzun ihtiyaç duyduğu yenilenmeyi sağlamak için tasarlandı. Modern şehir hayatının yorgunluğunu geride bırakacağınız, tamamen doğal yağlar ve uzman dokunuşlarla hazırlanan konseptimizle hizmetinizdeyiz.
+                        Royal Spa Masaj, bedeninizin ve ruhunuzun ihtiyaç duyduğu yenilenmeyi sağlamak için tasarlandı. Modern şehir hayatının yorgunluğunu geride bırakacağınız, tamamen doğal yağlar ve uzman dokunuşlarla hazırlanan konseptimizle hizmetinizdeyiz.
                     </p>
                     <div class="grid grid-cols-2 gap-6 mt-8">
                         <div>
@@ -157,8 +161,8 @@
                             <li class="flex items-center text-gray-600"><i class="fa-solid fa-check text-green-500 mr-2"></i> Doğal Aromaterapi Yağları</li>
                             <li class="flex items-center text-gray-600"><i class="fa-solid fa-check text-green-500 mr-2"></i> Sıcak İçecek İkramı</li>
                         </ul>
-                        <a href="#contact" class="block w-full py-3 px-4 bg-gray-50 hover:bg-green-600 text-gray-800 hover:text-white text-center rounded-xl font-medium transition-colors border border-gray-200 hover:border-green-600">
-                            Rezervasyon Yap
+                        <a href="https://wa.me/905444716589" target="_blank" class="flex justify-center items-center w-full py-3 px-4 bg-[#25D366] hover:bg-green-600 text-white rounded-xl font-medium transition-colors border border-transparent shadow-sm">
+                            <i class="fa-brands fa-whatsapp text-xl mr-2"></i> Rezervasyon Yap
                         </a>
                     </div>
                 </div>
@@ -229,7 +233,7 @@
                             </div>
                             <div>
                                 <h4 class="text-lg font-bold text-gray-900">Adres</h4>
-                                <p class="text-gray-600 mt-1">Örnek Mahallesi, Spa Caddesi No: 123<br>Şişli / İstanbul</p>
+                                <p class="text-gray-600 mt-1">Dörtyol Royal Spa ve Masaj<br>Dörtyol / Hatay</p>
                             </div>
                         </div>
                         <div class="flex items-start">
@@ -237,8 +241,8 @@
                                 <i class="fa-solid fa-phone"></i>
                             </div>
                             <div>
-                                <h4 class="text-lg font-bold text-gray-900">Telefon</h4>
-                                <p class="text-gray-600 mt-1">+90 (555) 123 45 67<br>+90 (212) 123 45 67</p>
+                                <h4 class="text-lg font-bold text-gray-900">Telefon & WhatsApp</h4>
+                                <p class="text-gray-600 mt-1">0544 471 65 89</p>
                             </div>
                         </div>
                         <div class="flex items-start">
@@ -247,34 +251,14 @@
                             </div>
                             <div>
                                 <h4 class="text-lg font-bold text-gray-900">Çalışma Saatleri</h4>
-                                <p class="text-gray-600 mt-1">Hafta İçi: 10:00 - 22:00<br>Hafta Sonu: 11:00 - 23:00</p>
+                                <p class="text-gray-600 mt-1">Haftanın Her Günü: 10:00 - 24:00</p>
                             </div>
                         </div>
                     </div>
                 </div>
                 
-                <div class="bg-gray-50 p-8 rounded-3xl border border-gray-100 shadow-lg relative overflow-hidden">
-                    <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-green-400 to-green-600"></div>
-                    <h3 class="text-2xl font-bold text-gray-900 font-serif mb-6">Hızlı Rezervasyon Talebi</h3>
-                    <form class="space-y-4">
-                        <div>
-                            <input type="text" placeholder="Adınız Soyadınız" class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-green-500 focus:border-green-500 bg-white">
-                        </div>
-                        <div>
-                            <input type="tel" placeholder="Telefon Numaranız" class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-green-500 focus:border-green-500 bg-white">
-                        </div>
-                        <div>
-                            <select class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-green-500 focus:border-green-500 bg-white text-gray-500">
-                                <option>Masaj Paketi Seçin</option>
-                                @foreach($packages as $package)
-                                    <option>{{ $package->name }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <button type="button" class="w-full py-4 bg-gray-900 hover:bg-green-700 text-white rounded-xl font-medium transition-colors text-lg mt-4">
-                            Gönder
-                        </button>
-                    </form>
+                <div class="rounded-3xl border border-gray-100 shadow-lg relative overflow-hidden min-h-[400px]">
+                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3193.271674630446!2d36.2213254!3d36.8359691!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x152f3f5cd3e1ff69%3A0x873fb2729a3c2756!2sD%C3%B6rtyol%20Royal%20Spa%20ve%20Masaj!5e0!3m2!1str!2str!4v1780073799715!5m2!1str!2str" class="w-full h-full absolute inset-0 border-0" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
                 </div>
             </div>
         </div>
@@ -285,14 +269,14 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center">
             <div class="mb-6 md:mb-0">
                 <a href="#" class="text-2xl font-bold font-serif text-white flex items-center">
-                    <i class="fa-solid fa-leaf text-green-500 mr-2"></i> ZENITH
+                    <img src="{{ asset('logo.jpg') }}" alt="Royal Spa" class="h-10 w-auto mr-2 rounded-full" onerror="this.outerHTML='<i class=\'fa-solid fa-leaf text-green-500 mr-2\'></i>'">
+                    ROYAL SPA
                 </a>
-                <p class="mt-2 text-sm text-gray-500">© 2026 Tüm hakları saklıdır.</p>
+                <p class="mt-2 text-sm text-gray-500">© 2026 Royal Spa Masaj. Tüm hakları saklıdır.</p>
             </div>
             <div class="flex space-x-6">
-                <a href="#" class="text-gray-400 hover:text-white transition-colors text-xl"><i class="fa-brands fa-instagram"></i></a>
-                <a href="#" class="text-gray-400 hover:text-white transition-colors text-xl"><i class="fa-brands fa-facebook"></i></a>
-                <a href="#" class="text-gray-400 hover:text-white transition-colors text-xl"><i class="fa-brands fa-whatsapp"></i></a>
+                <a href="https://www.instagram.com/royalspadortyol?igsh=MTllZXk3OWh2OG41YQ==" target="_blank" class="text-gray-400 hover:text-white transition-colors text-xl"><i class="fa-brands fa-instagram"></i></a>
+                <a href="https://wa.me/905444716589" target="_blank" class="text-gray-400 hover:text-white transition-colors text-xl"><i class="fa-brands fa-whatsapp"></i></a>
             </div>
         </div>
     </footer>
