@@ -14,7 +14,10 @@ class ReceptionController extends Controller
     public function dashboard()
     {
         $todayRecords = MassageRecord::whereDate('created_at', today())->count();
-        $todayExpenses = Expense::whereDate('created_at', today())->sum('amount');
+        $todayExpenses = Expense::whereDate('created_at', today())
+            ->whereDoesntHave('creator', function($q) {
+                $q->where('role', 'admin');
+            })->sum('amount');
         
         $activeRooms = [];
         for ($i = 1; $i <= 10; $i++) {
@@ -24,10 +27,8 @@ class ReceptionController extends Controller
         $recordsToday = MassageRecord::whereDate('created_at', today())->get();
         $now = \Carbon\Carbon::now();
         foreach ($recordsToday as $rec) {
-            if ($rec->room_number) {
-                // Calculate end time
-                $endTime = $rec->created_at->copy()->addMinutes($rec->duration_minutes);
-                if ($now->lessThan($endTime)) {
+            if ($rec->room_number && $rec->start_time && $rec->end_time) {
+                if ($now->between($rec->start_time, $rec->end_time)) {
                     $activeRooms[$rec->room_number] = true;
                 }
             }
@@ -66,15 +67,25 @@ class ReceptionController extends Controller
             'staff_id_2' => 'nullable|exists:staff,id',
             'massage_package_id' => 'required|exists:massage_packages,id',
             'room_number' => 'required|integer|min:1|max:10',
-            'duration_minutes' => 'required|integer',
+            'start_time' => 'required|date_format:H:i',
+            'end_time' => 'required|date_format:H:i',
             'payment_method' => 'required|string',
             'discount' => 'nullable|numeric|min:0'
         ]);
+
+        $startDate = today()->setTimeFromTimeString($request->start_time);
+        $endDate = today()->setTimeFromTimeString($request->end_time);
+        if ($endDate->lessThan($startDate)) {
+            $endDate->addDay();
+        }
 
         $package = MassagePackage::findOrFail($request->massage_package_id);
         $data['base_price'] = $package->price;
         $data['discount'] = $data['discount'] ?? 0;
         $data['final_price'] = max(0, $data['base_price'] - $data['discount']);
+        $data['start_time'] = $startDate;
+        $data['end_time'] = $endDate;
+        $data['duration_minutes'] = $startDate->diffInMinutes($endDate);
         $data['created_by'] = Auth::id();
 
         MassageRecord::create($data);
@@ -92,15 +103,25 @@ class ReceptionController extends Controller
             'staff_id_2' => 'nullable|exists:staff,id',
             'massage_package_id' => 'required|exists:massage_packages,id',
             'room_number' => 'required|integer|min:1|max:10',
-            'duration_minutes' => 'required|integer',
+            'start_time' => 'required|date_format:H:i',
+            'end_time' => 'required|date_format:H:i',
             'payment_method' => 'required|string',
             'discount' => 'nullable|numeric|min:0'
         ]);
+
+        $startDate = today()->setTimeFromTimeString($request->start_time);
+        $endDate = today()->setTimeFromTimeString($request->end_time);
+        if ($endDate->lessThan($startDate)) {
+            $endDate->addDay();
+        }
 
         $package = MassagePackage::findOrFail($request->massage_package_id);
         $data['base_price'] = $package->price;
         $data['discount'] = $data['discount'] ?? 0;
         $data['final_price'] = max(0, $data['base_price'] - $data['discount']);
+        $data['start_time'] = $startDate;
+        $data['end_time'] = $endDate;
+        $data['duration_minutes'] = $startDate->diffInMinutes($endDate);
         $data['updated_by'] = Auth::id();
 
         $record->update($data);
@@ -123,7 +144,10 @@ class ReceptionController extends Controller
     // --- Expenses ---
     public function expensesIndex()
     {
-        $expenses = Expense::orderBy('created_at', 'desc')->get();
+        $expenses = Expense::whereDoesntHave('creator', function($q) {
+            $q->where('role', 'admin');
+        })->orderBy('created_at', 'desc')->get();
+        
         return view('reception.expenses', compact('expenses'));
     }
 

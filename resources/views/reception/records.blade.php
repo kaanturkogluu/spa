@@ -54,7 +54,13 @@
                         <div class="font-medium text-purple-600"><i class="fa-solid fa-spa mr-1"></i> {{ $record->package->name ?? 'Silinmiş Paket' }}</div>
                     </td>
                     <td class="py-4 px-6 text-sm">
-                        <div class="mb-1"><i class="fa-regular fa-clock mr-1 text-gray-400"></i> {{ $record->duration_minutes }} dk</div>
+                        @if($record->start_time && $record->end_time)
+                            <div class="mb-1 text-gray-600 font-medium">
+                                <i class="fa-regular fa-clock mr-1 text-gray-400"></i> {{ $record->start_time->format('H:i') }} - {{ $record->end_time->format('H:i') }}
+                            </div>
+                        @else
+                            <div class="mb-1 text-gray-600 font-medium"><i class="fa-regular fa-clock mr-1 text-gray-400"></i> {{ $record->duration_minutes }} dk</div>
+                        @endif
                         <div>
                             @if($record->payment_method == 'nakit')
                                 <span class="px-2 py-1 bg-green-100 text-green-700 rounded text-xs font-semibold">Nakit</span>
@@ -73,7 +79,7 @@
                     </td>
                     <td class="py-4 px-6 text-right space-x-2">
                         @if($record->created_at->isToday())
-                        <button onclick="openEditModal({{ $record->id }}, {{ $record->room_number }}, {{ $record->staff_id }}, {{ $record->staff_id_2 ?? 'null' }}, {{ $record->massage_package_id }}, {{ $record->duration_minutes }}, '{{ $record->payment_method }}', {{ $record->discount }})" class="text-blue-500 hover:bg-blue-50 p-2 rounded-lg transition-colors">
+                        <button onclick="openEditModal({{ $record->id }}, {{ $record->room_number }}, {{ $record->staff_id }}, {{ $record->staff_id_2 ?? 'null' }}, {{ $record->massage_package_id }}, '{{ $record->start_time ? $record->start_time->format('H:i') : '' }}', '{{ $record->end_time ? $record->end_time->format('H:i') : '' }}', '{{ $record->payment_method }}', {{ $record->discount }})" class="text-blue-500 hover:bg-blue-50 p-2 rounded-lg transition-colors">
                             <i class="fa-solid fa-pen"></i>
                         </button>
                         <form action="{{ route('reception.records.destroy', $record) }}" method="POST" class="inline-block" onsubmit="return confirm('Silmek istediğinize emin misiniz?');">
@@ -152,9 +158,18 @@
                 </div>
             </div>
 
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Seans Süresi (Dakika)</label>
-                <input type="number" name="duration_minutes" id="duration_minutes" value="60" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500">
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Giriş Saati</label>
+                    <input type="time" name="start_time" id="start_time" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Çıkış Saati</label>
+                    <div class="flex">
+                        <input type="time" name="end_time" id="end_time" required class="w-full px-3 py-2 border border-gray-300 rounded-l-lg focus:ring-green-500 focus:border-green-500">
+                        <button type="button" onclick="add60Minutes()" class="bg-gray-100 border border-gray-300 border-l-0 rounded-r-lg px-3 text-sm font-medium text-gray-600 hover:bg-gray-200" title="Giriş saatine 60 dakika ekle">+60 Dk</button>
+                    </div>
+                </div>
             </div>
 
             <div>
@@ -207,7 +222,14 @@
         document.getElementById('staff_id').value = '';
         document.getElementById('staff_id_2').value = '';
         document.getElementById('massage_package_id').value = '';
-        document.getElementById('duration_minutes').value = '60';
+        
+        // Şimdiki saati giriş saati olarak ayarla
+        const now = new Date();
+        const currentHours = String(now.getHours()).padStart(2, '0');
+        const currentMinutes = String(now.getMinutes()).padStart(2, '0');
+        document.getElementById('start_time').value = `${currentHours}:${currentMinutes}`;
+        document.getElementById('end_time').value = '';
+        
         document.getElementById('payment_method').value = 'nakit';
         document.getElementById('discount').value = '0';
         document.getElementById('discountContainer').classList.add('hidden');
@@ -217,7 +239,7 @@
         document.getElementById('recordModal').classList.remove('hidden');
     }
 
-    function openEditModal(id, roomNumber, staffId, staffId2, packageId, duration, paymentMethod, discount) {
+    function openEditModal(id, roomNumber, staffId, staffId2, packageId, startTime, endTime, paymentMethod, discount) {
         document.getElementById('modalTitle').innerText = 'Kaydı Düzenle';
         document.getElementById('formMethod').value = 'PUT';
         document.getElementById('recordForm').action = '/reception/records/' + id;
@@ -226,7 +248,8 @@
         document.getElementById('staff_id').value = staffId;
         document.getElementById('staff_id_2').value = staffId2 || '';
         document.getElementById('massage_package_id').value = packageId;
-        document.getElementById('duration_minutes').value = duration;
+        document.getElementById('start_time').value = startTime;
+        document.getElementById('end_time').value = endTime;
         document.getElementById('payment_method').value = paymentMethod;
         document.getElementById('discount').value = discount;
         
@@ -278,5 +301,18 @@
             document.getElementById('room_number').value = room;
         }
     });
+
+    function add60Minutes() {
+        const startTimeInput = document.getElementById('start_time').value;
+        if (!startTimeInput) return;
+        const [hours, minutes] = startTimeInput.split(':').map(Number);
+        let date = new Date();
+        date.setHours(hours, minutes, 0, 0);
+        date.setMinutes(date.getMinutes() + 60);
+        
+        const endHours = String(date.getHours()).padStart(2, '0');
+        const endMinutes = String(date.getMinutes()).padStart(2, '0');
+        document.getElementById('end_time').value = `${endHours}:${endMinutes}`;
+    }
 </script>
 @endsection

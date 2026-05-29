@@ -15,6 +15,8 @@ class MassageRecord extends Model
         'staff_id_2',
         'massage_package_id',
         'duration_minutes',
+        'start_time',
+        'end_time',
         'payment_method',
         'base_price',
         'discount',
@@ -22,6 +24,11 @@ class MassageRecord extends Model
         'created_by',
         'updated_by',
         'deleted_by',
+    ];
+
+    protected $casts = [
+        'start_time' => 'datetime',
+        'end_time' => 'datetime',
     ];
 
     public function staff()
