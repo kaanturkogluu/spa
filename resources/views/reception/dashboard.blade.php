@@ -56,8 +56,8 @@
 </div>
 
 <div class="bg-white rounded-2xl shadow-sm p-6 border border-gray-100 flex justify-center">
-    <a href="{{ route('reception.expenses.index') }}" class="flex items-center justify-center px-6 py-3 bg-gray-50 rounded-xl hover:bg-green-50 hover:text-green-600 transition-colors border border-dashed border-gray-300 font-medium w-full sm:w-auto">
-        <i class="fa-solid fa-money-bill-wave mr-2 text-gray-500"></i> Günlük Gider Ekle
+    <a href="{{ route('reception.expenses.index') }}" class="flex items-center justify-center px-6 py-3 bg-gray-50 rounded-xl hover:bg-blue-50 hover:text-blue-600 transition-colors border border-dashed border-gray-300 font-medium w-full sm:w-auto">
+        <i class="fa-solid fa-wallet mr-2 text-gray-500"></i> Günlük Gelir / Gider İşlemi Ekle
     </a>
 </div>
 @endsection
