@@ -176,11 +176,10 @@ class AdminController extends Controller
 
         $totalIncome = $incomeNakit + $incomeKrediKarti + $incomeHavale + $externalIncome;
         $totalExpense = $expenses->where('type', 'expense')->sum('amount');
-        $netBalance = $totalIncome - $totalExpense;
-
         // Staff Premiums
         $staffPremiums = [];
         $receptionPremiums = [];
+        $totalPremiums = 0;
 
         foreach ($records as $record) {
             if ($record->package) {
@@ -197,6 +196,7 @@ class AdminController extends Controller
                         $staffPremiums[$staffName1] = 0;
                     }
                     $staffPremiums[$staffName1] += $premiumAmount;
+                    $totalPremiums += $premiumAmount;
 
                     // Add to Staff 2 if exists
                     if ($hasStaff2) {
@@ -205,6 +205,7 @@ class AdminController extends Controller
                             $staffPremiums[$staffName2] = 0;
                         }
                         $staffPremiums[$staffName2] += $premiumAmount;
+                        $totalPremiums += $premiumAmount;
                     }
                 }
 
@@ -215,9 +216,12 @@ class AdminController extends Controller
                         $receptionPremiums[$receptionName] = 0;
                     }
                     $receptionPremiums[$receptionName] += $record->package->reception_premium;
+                    $totalPremiums += $record->package->reception_premium;
                 }
             }
         }
+
+        $netBalance = $totalIncome - $totalExpense - $totalPremiums;
 
         return view('admin.cari', compact(
             'incomeNakit', 'incomeKrediKarti', 'incomeHavale', 

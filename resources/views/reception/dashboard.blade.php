@@ -6,7 +6,7 @@
     <p class="text-gray-500 mt-1">Bugünkü masaj kayıtları ve günlük giderler.</p>
 </div>
 
-<div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
     <!-- Stat Card 1 -->
     <div class="bg-white rounded-2xl shadow-sm p-6 border border-gray-100 flex items-center justify-between hover:shadow-md transition-shadow">
         <div>
@@ -26,6 +26,17 @@
         </div>
         <div class="w-12 h-12 bg-red-100 text-red-500 rounded-full flex items-center justify-center text-xl">
             <i class="fa-solid fa-money-bill-wave"></i>
+        </div>
+    </div>
+
+    <!-- Stat Card 3 -->
+    <div class="bg-white rounded-2xl shadow-sm p-6 border border-gray-100 flex items-center justify-between hover:shadow-md transition-shadow border-t-4 border-t-green-500">
+        <div>
+            <p class="text-sm font-medium text-gray-500 mb-1">Bugünkü Net Ciro</p>
+            <h3 class="text-3xl font-bold text-green-600">{{ number_format($netCiro, 2) }} ₺</h3>
+        </div>
+        <div class="w-12 h-12 bg-green-100 text-green-600 rounded-full flex items-center justify-center text-xl">
+            <i class="fa-solid fa-vault"></i>
         </div>
     </div>
 </div>

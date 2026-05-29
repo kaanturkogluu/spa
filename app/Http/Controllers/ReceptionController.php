@@ -13,21 +13,30 @@ class ReceptionController extends Controller
 {
     public function dashboard()
     {
-        $todayRecords = MassageRecord::whereDate('created_at', today())->count();
-        $todayExpenses = Expense::whereDate('created_at', today())
-            ->where('type', 'expense')
-            ->whereDoesntHave('creator', function($q) {
-                $q->where('role', 'admin');
-            })->sum('amount');
+        $today = today();
         
+        // Active Rooms
         $activeRooms = [];
         for ($i = 1; $i <= 10; $i++) {
             $activeRooms[$i] = false;
         }
 
-        $recordsToday = MassageRecord::whereDate('created_at', today())->get();
+        $recordsToday = MassageRecord::with(['package'])->whereDate('created_at', $today)->get();
         $now = \Carbon\Carbon::now();
+        
+        $grossIncome = 0;
+        $totalPremiums = 0;
+
         foreach ($recordsToday as $rec) {
+            $grossIncome += $rec->final_price;
+            
+            if ($rec->package) {
+                // Staff premium (both staffs combined)
+                $totalPremiums += $rec->package->staff_premium;
+                // Reception premium
+                $totalPremiums += $rec->package->reception_premium;
+            }
+
             if ($rec->room_number && $rec->start_time && $rec->end_time) {
                 if ($now->between($rec->start_time, $rec->end_time)) {
                     $activeRooms[$rec->room_number] = true;
@@ -35,7 +44,20 @@ class ReceptionController extends Controller
             }
         }
 
-        return view('reception.dashboard', compact('todayRecords', 'todayExpenses', 'activeRooms'));
+        $todayExpenses = Expense::whereDate('created_at', $today)
+            ->where('type', 'expense')
+            ->sum('amount');
+            
+        $todayIncomes = Expense::whereDate('created_at', $today)
+            ->where('type', 'income')
+            ->sum('amount');
+
+        $totalGrossIncome = $grossIncome + $todayIncomes;
+        $netCiro = $totalGrossIncome - $todayExpenses - $totalPremiums;
+
+        $todayRecords = $recordsToday->count();
+
+        return view('reception.dashboard', compact('todayRecords', 'todayExpenses', 'activeRooms', 'netCiro'));
     }
 
     // --- Records ---
