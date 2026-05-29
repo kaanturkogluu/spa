@@ -71,6 +71,27 @@ class ReportController extends Controller
             }
         }
 
-        return view('reports.daily', compact('records', 'staffStats', 'receptionStats', 'totalMassages', 'totalIncome'));
+        $todayExpenses = \App\Models\Expense::whereDate('created_at', $today)
+            ->where('type', 'expense')
+            ->sum('amount');
+            
+        $todayIncomes = \App\Models\Expense::whereDate('created_at', $today)
+            ->where('type', 'income')
+            ->sum('amount');
+
+        $expensesDetails = \App\Models\Expense::whereDate('created_at', $today)
+            ->where('type', 'expense')
+            ->get();
+
+        $grossIncome = $totalIncome; // Total from massages
+        $totalGrossIncome = $grossIncome + $todayIncomes;
+        
+        $totalPremiums = collect($staffStats)->sum('premium') + collect($receptionStats)->sum('premium');
+        $netCiro = $totalGrossIncome - $todayExpenses - $totalPremiums;
+
+        return view('reports.daily', compact(
+            'records', 'staffStats', 'receptionStats', 'totalMassages', 'totalIncome',
+            'grossIncome', 'todayIncomes', 'todayExpenses', 'expensesDetails', 'totalGrossIncome', 'totalPremiums', 'netCiro'
+        ));
     }
 }
