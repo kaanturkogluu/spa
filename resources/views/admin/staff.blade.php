@@ -40,7 +40,7 @@
                         @endif
                     </td>
                     <td class="py-4 px-6 text-right space-x-2">
-                        <button onclick="openEditModal({{ $staff->id }}, '{{ $staff->first_name }}', '{{ $staff->last_name }}')" class="text-blue-500 hover:bg-blue-50 p-2 rounded-lg transition-colors">
+                        <button onclick="openEditModal({{ $staff->id }}, '{{ $staff->first_name }}', '{{ $staff->last_name }}', {{ $staff->is_active ? 'true' : 'false' }})" class="text-blue-500 hover:bg-blue-50 p-2 rounded-lg transition-colors">
                             <i class="fa-solid fa-pen"></i>
                         </button>
                         <form action="{{ route('admin.staff.destroy', $staff) }}" method="POST" class="inline-block" onsubmit="return confirm('Silmek istediğinize emin misiniz?');">
@@ -80,6 +80,10 @@
                 <label class="block text-sm font-medium text-gray-700 mb-1">Soyad</label>
                 <input type="text" name="last_name" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500">
             </div>
+            <div class="flex items-center mt-2">
+                <input type="checkbox" name="is_active" id="is_active" value="1" checked class="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500">
+                <label for="is_active" class="ml-2 block text-sm text-gray-900">Aktif Personel</label>
+            </div>
             <div class="pt-4 flex justify-end space-x-2">
                 <button type="button" onclick="document.getElementById('addModal').classList.add('hidden')" class="px-4 py-2 text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg">İptal</button>
                 <button type="submit" class="px-4 py-2 text-white bg-green-600 hover:bg-green-700 rounded-lg font-medium">Kaydet</button>
@@ -106,6 +110,11 @@
                 <label class="block text-sm font-medium text-gray-700 mb-1">Soyad</label>
                 <input type="text" name="last_name" id="edit_last_name" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500">
             </div>
+            <div class="flex items-center mt-2">
+                <input type="hidden" name="is_active" value="0">
+                <input type="checkbox" name="is_active" id="edit_is_active" value="1" class="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500">
+                <label for="edit_is_active" class="ml-2 block text-sm text-gray-900">Aktif Personel</label>
+            </div>
             <div class="pt-4 flex justify-end space-x-2">
                 <button type="button" onclick="document.getElementById('editModal').classList.add('hidden')" class="px-4 py-2 text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg">İptal</button>
                 <button type="submit" class="px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded-lg font-medium">Güncelle</button>
@@ -117,9 +126,10 @@
 
 @section('scripts')
 <script>
-    function openEditModal(id, firstName, lastName) {
+    function openEditModal(id, firstName, lastName, isActive) {
         document.getElementById('edit_first_name').value = firstName;
         document.getElementById('edit_last_name').value = lastName;
+        document.getElementById('edit_is_active').checked = isActive;
         document.getElementById('editForm').action = '/admin/staff/' + id;
         document.getElementById('editModal').classList.remove('hidden');
     }

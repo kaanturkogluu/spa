@@ -77,9 +77,13 @@ class AdminController extends Controller
         $data = $request->validate([
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
+            'is_active' => 'boolean',
         ]);
+        
+        $data['is_active'] = $request->has('is_active') ? $request->is_active : true;
+
         Staff::create($data);
-        return back()->with('success', 'Personel başarıyla eklendi.');
+        return redirect()->route('admin.staff.index')->with('success', 'Personel başarıyla eklendi.');
     }
 
     public function staffUpdate(Request $request, Staff $staff)
@@ -87,9 +91,13 @@ class AdminController extends Controller
         $data = $request->validate([
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
+            'is_active' => 'boolean',
         ]);
+
+        $data['is_active'] = $request->has('is_active') ? $request->is_active : false;
+
         $staff->update($data);
-        return back()->with('success', 'Personel güncellendi.');
+        return redirect()->route('admin.staff.index')->with('success', 'Personel başarıyla güncellendi.');
     }
 
     public function staffDestroy(Staff $staff)
@@ -173,13 +181,28 @@ class AdminController extends Controller
 
         foreach ($records as $record) {
             if ($record->package) {
-                // Staff Premium
+                // Staff Premium Splitting
                 if ($record->staff) {
-                    $staffName = $record->staff->first_name . ' ' . $record->staff->last_name;
-                    if (!isset($staffPremiums[$staffName])) {
-                        $staffPremiums[$staffName] = 0;
+                    $staffName1 = $record->staff->first_name . ' ' . $record->staff->last_name;
+                    $hasStaff2 = $record->staff2 ? true : false;
+                    
+                    // If 2 staffs, split the premium
+                    $premiumAmount = $hasStaff2 ? ($record->package->staff_premium / 2) : $record->package->staff_premium;
+
+                    // Add to Staff 1
+                    if (!isset($staffPremiums[$staffName1])) {
+                        $staffPremiums[$staffName1] = 0;
                     }
-                    $staffPremiums[$staffName] += $record->package->staff_premium;
+                    $staffPremiums[$staffName1] += $premiumAmount;
+
+                    // Add to Staff 2 if exists
+                    if ($hasStaff2) {
+                        $staffName2 = $record->staff2->first_name . ' ' . $record->staff2->last_name;
+                        if (!isset($staffPremiums[$staffName2])) {
+                            $staffPremiums[$staffName2] = 0;
+                        }
+                        $staffPremiums[$staffName2] += $premiumAmount;
+                    }
                 }
 
                 // Reception Premium

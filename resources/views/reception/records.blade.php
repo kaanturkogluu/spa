@@ -17,6 +17,7 @@
             <thead>
                 <tr class="bg-gray-50 text-gray-600 border-b border-gray-100">
                     <th class="py-4 px-6 font-semibold">Tarih</th>
+                    <th class="py-4 px-6 font-semibold">Oda</th>
                     <th class="py-4 px-6 font-semibold">Personel / Paket</th>
                     <th class="py-4 px-6 font-semibold">Süre / Ödeme</th>
                     <th class="py-4 px-6 font-semibold">Tutar</th>
@@ -30,8 +31,14 @@
                         <div class="font-medium">{{ $record->created_at->format('d.m.Y') }}</div>
                         <div class="text-gray-500">{{ $record->created_at->format('H:i') }}</div>
                     </td>
+                    <td class="py-4 px-6 text-sm font-bold text-gray-700">
+                        Oda {{ $record->room_number }}
+                    </td>
                     <td class="py-4 px-6 text-sm">
                         <div class="font-medium text-blue-600 mb-1"><i class="fa-solid fa-user-nurse mr-1"></i> {{ $record->staff->first_name ?? 'Silinmiş' }} {{ $record->staff->last_name ?? '' }}</div>
+                        @if($record->staff2)
+                        <div class="font-medium text-blue-500 mb-1"><i class="fa-solid fa-user-nurse mr-1"></i> {{ $record->staff2->first_name }} {{ $record->staff2->last_name }}</div>
+                        @endif
                         <div class="font-medium text-purple-600"><i class="fa-solid fa-spa mr-1"></i> {{ $record->package->name ?? 'Silinmiş Paket' }}</div>
                     </td>
                     <td class="py-4 px-6 text-sm">
@@ -53,22 +60,26 @@
                         @endif
                     </td>
                     <td class="py-4 px-6 text-right space-x-2">
-                        <button onclick="openEditModal({{ $record->id }}, {{ $record->staff_id }}, {{ $record->massage_package_id }}, {{ $record->duration_minutes }}, '{{ $record->payment_method }}', {{ $record->discount }})" class="text-blue-500 hover:bg-blue-50 p-2 rounded-lg transition-colors">
+                        @if($record->created_at->isToday())
+                        <button onclick="openEditModal({{ $record->id }}, {{ $record->room_number }}, {{ $record->staff_id }}, {{ $record->staff_id_2 ?? 'null' }}, {{ $record->massage_package_id }}, {{ $record->duration_minutes }}, '{{ $record->payment_method }}', {{ $record->discount }})" class="text-blue-500 hover:bg-blue-50 p-2 rounded-lg transition-colors">
                             <i class="fa-solid fa-pen"></i>
                         </button>
-                        <form action="{{ route('reception.records.destroy', $record) }}" method="POST" class="inline-block" onsubmit="return confirm('Silmek istediğinize emin misiniz? (Bu işlem yöneticiler tarafından görülebilir)');">
+                        <form action="{{ route('reception.records.destroy', $record) }}" method="POST" class="inline-block" onsubmit="return confirm('Silmek istediğinize emin misiniz?');">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="text-red-500 hover:bg-red-50 p-2 rounded-lg transition-colors">
                                 <i class="fa-solid fa-trash"></i>
                             </button>
                         </form>
+                        @else
+                        <span class="text-xs text-gray-400 italic">Geçmiş Kayıt</span>
+                        @endif
                     </td>
                 </tr>
                 @endforeach
                 @if($records->isEmpty())
                 <tr>
-                    <td colspan="5" class="py-8 text-center text-gray-500">Henüz hiç kayıt bulunamadı.</td>
+                    <td colspan="6" class="py-8 text-center text-gray-500">Son 1 haftada hiç kayıt bulunamadı.</td>
                 </tr>
                 @endif
             </tbody>
@@ -87,24 +98,46 @@
             @csrf
             <input type="hidden" name="_method" id="formMethod" value="POST">
             
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Personel Seçin</label>
-                <select name="staff_id" id="staff_id" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500">
-                    <option value="">Seçiniz</option>
-                    @foreach($staffs as $staff)
-                        <option value="{{ $staff->id }}">{{ $staff->first_name }} {{ $staff->last_name }}</option>
-                    @endforeach
-                </select>
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Oda Seçin</label>
+                    <select name="room_number" id="room_number" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500">
+                        <option value="">Seçiniz</option>
+                        @for($i = 1; $i <= 10; $i++)
+                            <option value="{{ $i }}">Oda {{ $i }}</option>
+                        @endfor
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Masaj Paketi Seçin</label>
+                    <select name="massage_package_id" id="massage_package_id" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500" onchange="updatePrice()">
+                        <option value="" data-price="0">Seçiniz</option>
+                        @foreach($packages as $package)
+                            <option value="{{ $package->id }}" data-price="{{ $package->price }}">{{ $package->name }} ({{ number_format($package->price, 2) }} ₺)</option>
+                        @endforeach
+                    </select>
+                </div>
             </div>
             
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Masaj Paketi Seçin</label>
-                <select name="massage_package_id" id="massage_package_id" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500" onchange="updatePrice()">
-                    <option value="" data-price="0">Seçiniz</option>
-                    @foreach($packages as $package)
-                        <option value="{{ $package->id }}" data-price="{{ $package->price }}">{{ $package->name }} ({{ number_format($package->price, 2) }} ₺)</option>
-                    @endforeach
-                </select>
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Personel</label>
+                    <select name="staff_id" id="staff_id" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500">
+                        <option value="">Seçiniz</option>
+                        @foreach($staffs as $staff)
+                            <option value="{{ $staff->id }}">{{ $staff->first_name }} {{ $staff->last_name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">2. Personel (Çift Kişilik)</label>
+                    <select name="staff_id_2" id="staff_id_2" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500 text-gray-500">
+                        <option value="">Yok</option>
+                        @foreach($staffs as $staff)
+                            <option value="{{ $staff->id }}">{{ $staff->first_name }} {{ $staff->last_name }}</option>
+                        @endforeach
+                    </select>
+                </div>
             </div>
 
             <div>
@@ -158,7 +191,9 @@
         document.getElementById('formMethod').value = 'POST';
         document.getElementById('recordForm').action = "{{ route('reception.records.store') }}";
         
+        document.getElementById('room_number').value = '';
         document.getElementById('staff_id').value = '';
+        document.getElementById('staff_id_2').value = '';
         document.getElementById('massage_package_id').value = '';
         document.getElementById('duration_minutes').value = '60';
         document.getElementById('payment_method').value = 'nakit';
@@ -170,12 +205,14 @@
         document.getElementById('recordModal').classList.remove('hidden');
     }
 
-    function openEditModal(id, staffId, packageId, duration, paymentMethod, discount) {
+    function openEditModal(id, roomNumber, staffId, staffId2, packageId, duration, paymentMethod, discount) {
         document.getElementById('modalTitle').innerText = 'Kaydı Düzenle';
         document.getElementById('formMethod').value = 'PUT';
         document.getElementById('recordForm').action = '/reception/records/' + id;
         
+        document.getElementById('room_number').value = roomNumber;
         document.getElementById('staff_id').value = staffId;
+        document.getElementById('staff_id_2').value = staffId2 || '';
         document.getElementById('massage_package_id').value = packageId;
         document.getElementById('duration_minutes').value = duration;
         document.getElementById('payment_method').value = paymentMethod;

@@ -10,7 +10,9 @@ class MassageRecord extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
+        'room_number',
         'staff_id',
+        'staff_id_2',
         'massage_package_id',
         'duration_minutes',
         'payment_method',
@@ -19,10 +21,19 @@ class MassageRecord extends Model
         'final_price',
         'created_by',
         'updated_by',
-        'deleted_by'
+        'deleted_by',
     ];
 
-    public function staff() { return $this->belongsTo(Staff::class); }
+    public function staff()
+    {
+        return $this->belongsTo(Staff::class);
+    }
+
+    public function staff2()
+    {
+        return $this->belongsTo(Staff::class, 'staff_id_2');
+    }
+
     public function package() { return $this->belongsTo(MassagePackage::class, 'massage_package_id'); }
     public function creator() { return $this->belongsTo(User::class, 'created_by'); }
     public function updater() { return $this->belongsTo(User::class, 'updated_by'); }

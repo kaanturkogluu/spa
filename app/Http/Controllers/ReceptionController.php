@@ -21,9 +21,16 @@ class ReceptionController extends Controller
     // --- Records ---
     public function recordsIndex()
     {
-        $records = MassageRecord::with(['staff', 'package'])->orderBy('created_at', 'desc')->get();
+        // Sadece son 1 haftanın kayıtlarını getir.
+        $oneWeekAgo = \Carbon\Carbon::now()->subWeek();
+        $records = MassageRecord::with(['staff', 'staff2', 'package'])
+            ->where('created_at', '>=', $oneWeekAgo)
+            ->orderBy('created_at', 'desc')
+            ->get();
+            
         $staffs = Staff::where('is_active', true)->get();
         $packages = MassagePackage::all();
+        
         return view('reception.records', compact('records', 'staffs', 'packages'));
     }
 
@@ -31,35 +38,41 @@ class ReceptionController extends Controller
     {
         $data = $request->validate([
             'staff_id' => 'required|exists:staff,id',
+            'staff_id_2' => 'nullable|exists:staff,id',
             'massage_package_id' => 'required|exists:massage_packages,id',
-            'duration_minutes' => 'required|integer|min:1',
-            'payment_method' => 'required|in:nakit,havale,kredi_karti',
-            'discount' => 'nullable|numeric|min:0',
+            'room_number' => 'required|integer|min:1|max:10',
+            'duration_minutes' => 'required|integer',
+            'payment_method' => 'required|string',
+            'discount' => 'nullable|numeric|min:0'
         ]);
 
-        $package = MassagePackage::findOrFail($data['massage_package_id']);
-        
+        $package = MassagePackage::findOrFail($request->massage_package_id);
         $data['base_price'] = $package->price;
         $data['discount'] = $data['discount'] ?? 0;
         $data['final_price'] = max(0, $data['base_price'] - $data['discount']);
         $data['created_by'] = Auth::id();
 
         MassageRecord::create($data);
-        return back()->with('success', 'Kayıt başarıyla eklendi.');
+        return back()->with('success', 'Masaj kaydı oluşturuldu.');
     }
 
     public function recordsUpdate(Request $request, MassageRecord $record)
     {
+        if (!$record->created_at->isToday()) {
+            return back()->withErrors('Sadece bugün eklenen kayıtları düzenleyebilirsiniz.');
+        }
+
         $data = $request->validate([
             'staff_id' => 'required|exists:staff,id',
+            'staff_id_2' => 'nullable|exists:staff,id',
             'massage_package_id' => 'required|exists:massage_packages,id',
-            'duration_minutes' => 'required|integer|min:1',
-            'payment_method' => 'required|in:nakit,havale,kredi_karti',
-            'discount' => 'nullable|numeric|min:0',
+            'room_number' => 'required|integer|min:1|max:10',
+            'duration_minutes' => 'required|integer',
+            'payment_method' => 'required|string',
+            'discount' => 'nullable|numeric|min:0'
         ]);
 
-        $package = MassagePackage::findOrFail($data['massage_package_id']);
-        
+        $package = MassagePackage::findOrFail($request->massage_package_id);
         $data['base_price'] = $package->price;
         $data['discount'] = $data['discount'] ?? 0;
         $data['final_price'] = max(0, $data['base_price'] - $data['discount']);
@@ -71,9 +84,14 @@ class ReceptionController extends Controller
 
     public function recordsDestroy(MassageRecord $record)
     {
+        if (!$record->created_at->isToday()) {
+            return back()->withErrors('Sadece bugün eklenen kayıtları silebilirsiniz.');
+        }
+        
         $record->deleted_by = Auth::id();
         $record->save();
         $record->delete();
+        
         return back()->with('success', 'Kayıt silindi.');
     }
 

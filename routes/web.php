@@ -13,9 +13,12 @@ Route::get('/', function () {
 
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
-Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 Route::middleware('auth')->group(function () {
+    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+    // Shared Routes
+    Route::get('/daily-report', [\App\Http\Controllers\ReportController::class, 'daily'])->name('daily.report');
 
     // Admin Routes
     Route::middleware('role:admin')->prefix('admin')->name('admin.')->group(function () {
