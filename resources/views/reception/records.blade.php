@@ -11,6 +11,18 @@
     </button>
 </div>
 
+@if(request()->has('room'))
+<div class="mb-6 bg-blue-50 border-l-4 border-blue-500 p-4 rounded-lg flex justify-between items-center">
+    <div>
+        <p class="text-blue-700 font-medium">
+            <i class="fa-solid fa-filter mr-2"></i> 
+            <strong>Oda {{ request()->room }}</strong> için bugünkü kayıtlar listeleniyor.
+        </p>
+    </div>
+    <a href="{{ route('reception.records.index') }}" class="text-sm bg-white text-blue-600 border border-blue-200 px-3 py-1 rounded hover:bg-blue-100 transition-colors">Tüm Kayıtları Gör</a>
+</div>
+@endif
+
 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
     <div class="overflow-x-auto">
         <table class="w-full text-left border-collapse">
@@ -255,5 +267,16 @@
         
         document.getElementById('finalPriceDisplay').innerText = finalPrice.toFixed(2) + ' ₺';
     }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const room = urlParams.get('room');
+        const action = urlParams.get('action');
+        
+        if (room && action === 'add') {
+            openAddModal();
+            document.getElementById('room_number').value = room;
+        }
+    });
 </script>
 @endsection

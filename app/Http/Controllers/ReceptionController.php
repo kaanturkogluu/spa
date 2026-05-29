@@ -15,18 +15,43 @@ class ReceptionController extends Controller
     {
         $todayRecords = MassageRecord::whereDate('created_at', today())->count();
         $todayExpenses = Expense::whereDate('created_at', today())->sum('amount');
-        return view('reception.dashboard', compact('todayRecords', 'todayExpenses'));
+        
+        $activeRooms = [];
+        for ($i = 1; $i <= 10; $i++) {
+            $activeRooms[$i] = false;
+        }
+
+        $recordsToday = MassageRecord::whereDate('created_at', today())->get();
+        $now = \Carbon\Carbon::now();
+        foreach ($recordsToday as $rec) {
+            if ($rec->room_number) {
+                // Calculate end time
+                $endTime = $rec->created_at->copy()->addMinutes($rec->duration_minutes);
+                if ($now->lessThan($endTime)) {
+                    $activeRooms[$rec->room_number] = true;
+                }
+            }
+        }
+
+        return view('reception.dashboard', compact('todayRecords', 'todayExpenses', 'activeRooms'));
     }
 
     // --- Records ---
-    public function recordsIndex()
+    public function recordsIndex(Request $request)
     {
-        // Sadece son 1 haftanın kayıtlarını getir.
-        $oneWeekAgo = \Carbon\Carbon::now()->subWeek();
-        $records = MassageRecord::with(['staff', 'staff2', 'package'])
-            ->where('created_at', '>=', $oneWeekAgo)
-            ->orderBy('created_at', 'desc')
-            ->get();
+        $query = MassageRecord::with(['staff', 'staff2', 'package']);
+        
+        if ($request->has('room')) {
+            // Eğer odaya tıklandıysa sadece o odanın bugünkü kayıtlarını getir.
+            $query->where('room_number', $request->room)
+                  ->whereDate('created_at', today());
+        } else {
+            // Sadece son 1 haftanın kayıtlarını getir.
+            $oneWeekAgo = \Carbon\Carbon::now()->subWeek();
+            $query->where('created_at', '>=', $oneWeekAgo);
+        }
+        
+        $records = $query->orderBy('created_at', 'desc')->get();
             
         $staffs = Staff::where('is_active', true)->get();
         $packages = MassagePackage::all();
