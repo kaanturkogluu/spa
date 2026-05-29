@@ -12,11 +12,12 @@ class ReportController extends Controller
     {
         $today = Carbon::today();
         
-        $records = MassageRecord::with(['staff', 'staff2', 'package'])
+        $records = MassageRecord::with(['staff', 'staff2', 'package', 'creator'])
             ->whereDate('created_at', $today)
             ->get();
             
         $staffStats = [];
+        $receptionStats = [];
         $totalMassages = $records->count();
         $totalIncome = $records->sum('final_price');
 
@@ -53,9 +54,23 @@ class ReportController extends Controller
                     $staffStats[$staffId2]['count'] += 1; // It counts as a session for them too
                     $staffStats[$staffId2]['premium'] += $premiumAmount;
                 }
+
+                // Process Receptionist
+                if ($record->creator) {
+                    $creatorId = $record->creator->id;
+                    if (!isset($receptionStats[$creatorId])) {
+                        $receptionStats[$creatorId] = [
+                            'name' => $record->creator->name . ' ' . $record->creator->surname,
+                            'count' => 0,
+                            'premium' => 0
+                        ];
+                    }
+                    $receptionStats[$creatorId]['count'] += 1;
+                    $receptionStats[$creatorId]['premium'] += $record->package->reception_premium;
+                }
             }
         }
 
-        return view('reports.daily', compact('records', 'staffStats', 'totalMassages', 'totalIncome'));
+        return view('reports.daily', compact('records', 'staffStats', 'receptionStats', 'totalMassages', 'totalIncome'));
     }
 }

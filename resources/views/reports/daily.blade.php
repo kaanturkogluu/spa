@@ -67,4 +67,42 @@
     </div>
 </div>
 
+<!-- Resepsiyon Raporu -->
+<div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-8">
+    <div class="p-5 border-b border-gray-100 bg-gray-50 flex items-center">
+        <i class="fa-solid fa-desktop text-blue-500 text-xl mr-3"></i>
+        <h3 class="text-lg font-bold text-gray-800">Resepsiyon Performans ve Prim Raporu (Bugün)</h3>
+    </div>
+    <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+            <thead>
+                <tr class="bg-gray-50 text-gray-600 border-b border-gray-100 text-sm">
+                    <th class="py-3 px-6 font-semibold">Resepsiyonist Adı</th>
+                    <th class="py-3 px-6 font-semibold text-center">Oluşturulan Masaj Sayısı</th>
+                    <th class="py-3 px-6 font-semibold text-right">Hak Edilen Toplam Prim</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100 text-gray-800">
+                @forelse($receptionStats as $stat)
+                <tr class="hover:bg-gray-50 transition-colors">
+                    <td class="py-4 px-6 font-medium">
+                        {{ $stat['name'] }}
+                    </td>
+                    <td class="py-4 px-6 text-center font-bold text-gray-700">
+                        {{ $stat['count'] }}
+                    </td>
+                    <td class="py-4 px-6 text-right font-bold text-blue-600 text-lg">
+                        {{ number_format($stat['premium'], 2) }} ₺
+                    </td>
+                </tr>
+                @empty
+                <tr>
+                    <td colspan="3" class="py-8 text-center text-gray-500">Bugün henüz hiçbir resepsiyon işlemi kaydedilmedi.</td>
+                </tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
+</div>
+
 @endsection
