@@ -241,7 +241,7 @@ class AdminController extends Controller
         return view('admin.cari', compact(
             'incomeNakit', 'incomeKrediKarti', 'incomeHavale', 
             'totalIncome', 'totalExpense', 'netBalance', 
-            'staffPremiums', 'receptionPremiums', 'records'
+            'staffPremiums', 'receptionPremiums', 'records', 'totalPremiums'
         ));
     }
 

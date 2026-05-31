@@ -43,6 +43,36 @@
 </div>
 @endif
 
+<!-- Finansal Özet Tablosu -->
+<div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-8">
+    <div class="p-5 border-b border-gray-100 bg-gray-50 flex items-center">
+        <i class="fa-solid fa-chart-line text-blue-500 text-xl mr-3"></i>
+        <h3 class="text-lg font-bold text-gray-800">Finansal Özet Raporu</h3>
+    </div>
+    <div class="p-0">
+        <table class="w-full text-left border-collapse">
+            <tbody class="divide-y divide-gray-100 text-gray-800 text-lg">
+                <tr class="hover:bg-gray-50 transition-colors">
+                    <td class="py-4 px-6 font-medium">Toplam Brüt Gelir</td>
+                    <td class="py-4 px-6 text-right font-bold text-blue-600">{{ number_format($totalIncome, 2) }} ₺</td>
+                </tr>
+                <tr class="hover:bg-gray-50 transition-colors">
+                    <td class="py-4 px-6 font-medium">Toplam Gider</td>
+                    <td class="py-4 px-6 text-right font-bold text-red-600">-{{ number_format($totalExpense, 2) }} ₺</td>
+                </tr>
+                <tr class="hover:bg-gray-50 transition-colors">
+                    <td class="py-4 px-6 font-medium">Toplam Personel / Resepsiyon Hak Edişi</td>
+                    <td class="py-4 px-6 text-right font-bold text-red-600">-{{ number_format($totalPremiums, 2) }} ₺</td>
+                </tr>
+                <tr class="bg-green-50">
+                    <td class="py-5 px-6 font-black text-xl text-green-900 border-t-2 border-green-200">Net Kasa Bakiyesi</td>
+                    <td class="py-5 px-6 text-right font-black text-2xl text-green-600 border-t-2 border-green-200">{{ number_format($netBalance, 2) }} ₺</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
 <!-- Genel Kasa Durumu -->
 <h3 class="text-xl font-bold text-gray-800 mb-4 border-b pb-2"><i class="fa-solid fa-vault text-gray-400 mr-2"></i> Kasa Özeti</h3>
 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
