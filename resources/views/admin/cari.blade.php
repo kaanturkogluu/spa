@@ -95,53 +95,92 @@
     </div>
 </div>
 
-<div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-    <!-- Personel Hak Edişleri -->
-    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-        <div class="p-5 border-b border-gray-100 bg-gray-50 flex items-center">
-            <i class="fa-solid fa-user-nurse text-blue-500 text-xl mr-3"></i>
-            <h3 class="text-lg font-bold text-gray-800">Personel Hak Edişleri (Primler)</h3>
+<!-- Personel Hak Edişleri -->
+<h3 class="text-xl font-bold text-gray-800 mb-4 border-b pb-2"><i class="fa-solid fa-users text-blue-500 mr-2"></i> Personel Hak Edişleri (Primler)</h3>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+    @forelse($staffPremiums as $stat)
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden flex flex-col hover:shadow-md transition-shadow">
+        <div class="p-4 border-b border-gray-100 bg-blue-50 flex justify-between items-center">
+            <h4 class="font-bold text-gray-800 text-lg"><i class="fa-solid fa-user-nurse text-blue-400 mr-2"></i> {{ $stat['name'] }}</h4>
         </div>
-        <div class="p-0">
-            <table class="w-full text-left border-collapse">
-                <tbody class="divide-y divide-gray-100 text-gray-800">
-                    @forelse($staffPremiums as $name => $amount)
-                    <tr class="hover:bg-gray-50 transition-colors">
-                        <td class="py-3 px-6 font-medium">{{ $name }}</td>
-                        <td class="py-3 px-6 text-right font-bold text-blue-600">{{ number_format($amount, 2) }} ₺</td>
+        
+        <div class="flex-1 p-0 overflow-x-auto">
+            <table class="w-full text-left text-sm">
+                <thead>
+                    <tr class="bg-gray-50 text-gray-600 border-b border-gray-100 text-xs uppercase tracking-wider">
+                        <th class="py-3 px-4 font-semibold">İşlem Türü</th>
+                        <th class="py-3 px-4 font-semibold text-center">Adet</th>
+                        <th class="py-3 px-4 font-semibold text-right">Prim</th>
                     </tr>
-                    @empty
-                    <tr>
-                        <td colspan="2" class="py-6 text-center text-gray-500">Seçili tarihte hak ediş bulunamadı.</td>
-                    </tr>
-                    @endforelse
+                </thead>
+                <tbody class="divide-y divide-gray-50">
+                    @if(isset($stat['details']) && count($stat['details']) > 0)
+                        @foreach($stat['details'] as $desc => $detail)
+                        <tr class="hover:bg-gray-50 transition-colors">
+                            <td class="py-3 px-4 text-gray-700 font-medium">{{ $desc }}</td>
+                            <td class="py-3 px-4 text-center font-semibold text-gray-600 bg-gray-50/50">{{ $detail['count'] }}</td>
+                            <td class="py-3 px-4 text-right font-semibold text-blue-600">{{ number_format($detail['premium'], 2) }} ₺</td>
+                        </tr>
+                        @endforeach
+                    @else
+                        <tr>
+                            <td colspan="3" class="py-6 text-center text-gray-400 text-sm">Detay bulunamadı.</td>
+                        </tr>
+                    @endif
                 </tbody>
+                <tfoot class="bg-gray-100 border-t border-gray-200">
+                    <tr>
+                        <th class="py-3 px-4 text-right font-bold text-gray-700">TOPLAM:</th>
+                        <th class="py-3 px-4 text-center font-black text-gray-800 text-base">{{ $stat['count'] }}</th>
+                        <th class="py-3 px-4 text-right font-black text-blue-700 text-base whitespace-nowrap">{{ number_format($stat['premium'], 2) }} ₺</th>
+                    </tr>
+                </tfoot>
             </table>
         </div>
     </div>
+    @empty
+    <div class="col-span-full bg-white rounded-2xl shadow-sm border border-gray-100 p-10 text-center text-gray-500">
+        <i class="fa-solid fa-users text-5xl text-gray-300 mb-4 block"></i>
+        Bu zaman aralığında hiçbir personel işlemi kaydedilmedi.
+    </div>
+    @endforelse
+</div>
 
-    <!-- Resepsiyonist Hak Edişleri -->
-    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-        <div class="p-5 border-b border-gray-100 bg-gray-50 flex items-center">
-            <i class="fa-solid fa-desktop text-purple-500 text-xl mr-3"></i>
-            <h3 class="text-lg font-bold text-gray-800">Resepsiyonist Hak Edişleri (Primler)</h3>
-        </div>
-        <div class="p-0">
-            <table class="w-full text-left border-collapse">
-                <tbody class="divide-y divide-gray-100 text-gray-800">
-                    @forelse($receptionPremiums as $name => $amount)
-                    <tr class="hover:bg-gray-50 transition-colors">
-                        <td class="py-3 px-6 font-medium">{{ $name }}</td>
-                        <td class="py-3 px-6 text-right font-bold text-purple-600">{{ number_format($amount, 2) }} ₺</td>
-                    </tr>
-                    @empty
-                    <tr>
-                        <td colspan="2" class="py-6 text-center text-gray-500">Seçili tarihte hak ediş bulunamadı.</td>
-                    </tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
+<!-- Resepsiyonist Hak Edişleri -->
+<div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-8">
+    <div class="p-5 border-b border-gray-100 bg-gray-50 flex items-center">
+        <i class="fa-solid fa-desktop text-purple-500 text-xl mr-3"></i>
+        <h3 class="text-lg font-bold text-gray-800">Resepsiyonist Hak Edişleri (Primler)</h3>
+    </div>
+    <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+            <thead>
+                <tr class="bg-gray-50 text-gray-600 border-b border-gray-100 text-sm">
+                    <th class="py-3 px-6 font-semibold">Resepsiyonist Adı</th>
+                    <th class="py-3 px-6 font-semibold text-center">Oluşturulan Masaj Sayısı</th>
+                    <th class="py-3 px-6 font-semibold text-right">Hak Edilen Toplam Prim</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100 text-gray-800">
+                @forelse($receptionPremiums as $stat)
+                <tr class="hover:bg-gray-50 transition-colors">
+                    <td class="py-4 px-6 font-medium">
+                        {{ $stat['name'] }}
+                    </td>
+                    <td class="py-4 px-6 text-center font-bold text-gray-700">
+                        {{ $stat['count'] }}
+                    </td>
+                    <td class="py-4 px-6 text-right font-bold text-purple-600 text-lg">
+                        {{ number_format($stat['premium'], 2) }} ₺
+                    </td>
+                </tr>
+                @empty
+                <tr>
+                    <td colspan="3" class="py-8 text-center text-gray-500">Bu zaman aralığında hiçbir resepsiyon işlemi kaydedilmedi.</td>
+                </tr>
+                @endforelse
+            </tbody>
+        </table>
     </div>
 </div>
 

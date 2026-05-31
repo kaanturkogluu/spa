@@ -184,38 +184,53 @@ class AdminController extends Controller
         foreach ($records as $record) {
             if ($record->package) {
                 // Staff Premium Splitting
+                $hasStaff2 = $record->staff_id_2 ? true : false;
+                $premiumAmount = $hasStaff2 ? ($record->package->staff_premium / 2) : $record->package->staff_premium;
+
                 if ($record->staff) {
                     $staffName1 = $record->staff->first_name . ' ' . $record->staff->last_name;
-                    $hasStaff2 = $record->staff2 ? true : false;
                     
-                    // If 2 staffs, split the premium
-                    $premiumAmount = $hasStaff2 ? ($record->package->staff_premium / 2) : $record->package->staff_premium;
-
-                    // Add to Staff 1
                     if (!isset($staffPremiums[$staffName1])) {
-                        $staffPremiums[$staffName1] = 0;
+                        $staffPremiums[$staffName1] = ['name' => $staffName1, 'count' => 0, 'premium' => 0, 'details' => []];
                     }
-                    $staffPremiums[$staffName1] += $premiumAmount;
+                    $staffPremiums[$staffName1]['count'] += 1;
+                    $staffPremiums[$staffName1]['premium'] += $premiumAmount;
                     $totalPremiums += $premiumAmount;
 
-                    // Add to Staff 2 if exists
-                    if ($hasStaff2) {
-                        $staffName2 = $record->staff2->first_name . ' ' . $record->staff2->last_name;
-                        if (!isset($staffPremiums[$staffName2])) {
-                            $staffPremiums[$staffName2] = 0;
-                        }
-                        $staffPremiums[$staffName2] += $premiumAmount;
-                        $totalPremiums += $premiumAmount;
+                    $detailKey = $record->package->name . ' (' . ucfirst($record->payment_method) . ')';
+                    if (!isset($staffPremiums[$staffName1]['details'][$detailKey])) {
+                        $staffPremiums[$staffName1]['details'][$detailKey] = ['count' => 0, 'premium' => 0];
                     }
+                    $staffPremiums[$staffName1]['details'][$detailKey]['count'] += 1;
+                    $staffPremiums[$staffName1]['details'][$detailKey]['premium'] += $premiumAmount;
+                }
+
+                // Add to Staff 2 if exists
+                if ($hasStaff2 && $record->staff2) {
+                    $staffName2 = $record->staff2->first_name . ' ' . $record->staff2->last_name;
+                    if (!isset($staffPremiums[$staffName2])) {
+                        $staffPremiums[$staffName2] = ['name' => $staffName2, 'count' => 0, 'premium' => 0, 'details' => []];
+                    }
+                    $staffPremiums[$staffName2]['count'] += 1;
+                    $staffPremiums[$staffName2]['premium'] += $premiumAmount;
+                    $totalPremiums += $premiumAmount;
+
+                    $detailKey = $record->package->name . ' (' . ucfirst($record->payment_method) . ')';
+                    if (!isset($staffPremiums[$staffName2]['details'][$detailKey])) {
+                        $staffPremiums[$staffName2]['details'][$detailKey] = ['count' => 0, 'premium' => 0];
+                    }
+                    $staffPremiums[$staffName2]['details'][$detailKey]['count'] += 1;
+                    $staffPremiums[$staffName2]['details'][$detailKey]['premium'] += $premiumAmount;
                 }
 
                 // Reception Premium
                 if ($record->creator) {
                     $receptionName = $record->creator->name . ' ' . $record->creator->surname;
                     if (!isset($receptionPremiums[$receptionName])) {
-                        $receptionPremiums[$receptionName] = 0;
+                        $receptionPremiums[$receptionName] = ['name' => $receptionName, 'count' => 0, 'premium' => 0];
                     }
-                    $receptionPremiums[$receptionName] += $record->package->reception_premium;
+                    $receptionPremiums[$receptionName]['count'] += 1;
+                    $receptionPremiums[$receptionName]['premium'] += $record->package->reception_premium;
                     $totalPremiums += $record->package->reception_premium;
                 }
             }
