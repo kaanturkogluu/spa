@@ -163,4 +163,32 @@ class ReceptionController extends Controller
         $msg = $data['type'] == 'income' ? 'Gelir eklendi.' : 'Gider eklendi.';
         return back()->with('success', $msg);
     }
+
+    // --- End Of Day ---
+    public function endOfDay()
+    {
+        return view('reception.end_of_day');
+    }
+
+    public function storeEndOfDay(Request $request)
+    {
+        $request->validate([
+            'start_date' => 'required|date',
+            'end_date' => 'required|date|after_or_equal:start_date',
+        ]);
+
+        $start = \Carbon\Carbon::parse($request->start_date);
+        $end = \Carbon\Carbon::parse($request->end_date);
+
+        $title = $start->format('d/m/Y H:i') . ' - ' . $end->format('d/m/Y H:i') . ' Gün Sonu';
+
+        \App\Models\EndOfDayReport::create([
+            'title' => $title,
+            'start_date' => $start,
+            'end_date' => $end,
+            'created_by' => Auth::id()
+        ]);
+
+        return redirect()->route('reception.dashboard')->with('success', 'Gün sonu başarıyla kaydedildi.');
+    }
 }

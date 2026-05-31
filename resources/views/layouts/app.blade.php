@@ -51,8 +51,8 @@
                     <a href="{{ route('admin.tracking') }}" class="flex items-center px-4 py-3 rounded-lg hover:bg-gray-800 transition-colors {{ request()->routeIs('admin.tracking') ? 'bg-gray-800 border-l-4 border-green-400' : '' }}">
                         <i class="fa-solid fa-clock-rotate-left w-6"></i> Sistem İzleme
                     </a>
-                    <a href="{{ route('daily.report') }}" class="flex items-center px-4 py-3 rounded-lg hover:bg-gray-800 transition-colors {{ request()->routeIs('daily.report') ? 'bg-gray-800 border-l-4 border-green-400' : '' }}">
-                        <i class="fa-solid fa-calendar-day w-6"></i> Gün Raporu
+                    <a href="{{ route('shared.end_of_day.index') }}" class="flex items-center px-4 py-3 rounded-lg hover:bg-gray-800 transition-colors {{ request()->routeIs('shared.end_of_day.*') ? 'bg-gray-800 border-l-4 border-green-400' : '' }}">
+                        <i class="fa-solid fa-boxes-packing w-6"></i> Gün Sonu Raporları
                     </a>
                 @elseif(Auth::user()->role === 'reception')
                     <a href="{{ route('reception.dashboard') }}" class="flex items-center px-4 py-3 rounded-lg hover:bg-gray-800 transition-colors {{ request()->routeIs('reception.dashboard') ? 'bg-gray-800 border-l-4 border-green-400' : '' }}">
@@ -64,8 +64,11 @@
                     <a href="{{ route('reception.expenses.index') }}" class="flex items-center px-4 py-3 rounded-lg hover:bg-gray-800 transition-colors {{ request()->routeIs('reception.expenses.*') ? 'bg-gray-800 border-l-4 border-green-400' : '' }}">
                         <i class="fa-solid fa-wallet w-6"></i> Günlük Gelir / Gider
                     </a>
-                    <a href="{{ route('daily.report') }}" class="flex items-center px-4 py-3 rounded-lg hover:bg-gray-800 transition-colors {{ request()->routeIs('daily.report') ? 'bg-gray-800 border-l-4 border-green-400' : '' }}">
-                        <i class="fa-solid fa-calendar-day w-6"></i> Gün Raporu
+                    <a href="{{ route('reception.end_of_day.create') }}" class="flex items-center px-4 py-3 rounded-lg hover:bg-gray-800 transition-colors {{ request()->routeIs('reception.end_of_day.*') ? 'bg-gray-800 border-l-4 border-green-400' : '' }}">
+                        <i class="fa-solid fa-calendar-check w-6"></i> Gün Sonu Yap
+                    </a>
+                    <a href="{{ route('shared.end_of_day.index') }}" class="flex items-center px-4 py-3 rounded-lg hover:bg-gray-800 transition-colors {{ request()->routeIs('shared.end_of_day.*') ? 'bg-gray-800 border-l-4 border-green-400' : '' }}">
+                        <i class="fa-solid fa-file-invoice-dollar w-6"></i> Gün Sonu Raporları
                     </a>
                 @endif
             </nav>

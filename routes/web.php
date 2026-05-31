@@ -19,6 +19,8 @@ Route::middleware('auth')->group(function () {
 
     // Shared Routes
     Route::get('/daily-report', [\App\Http\Controllers\ReportController::class, 'daily'])->name('daily.report');
+    Route::get('/end-of-day-reports', [\App\Http\Controllers\ReportController::class, 'endOfDayReports'])->name('shared.end_of_day.index');
+    Route::get('/end-of-day-reports/{report}', [\App\Http\Controllers\ReportController::class, 'showEndOfDayReport'])->name('shared.end_of_day.show');
 
     // Admin Routes
     Route::middleware('role:admin')->prefix('admin')->name('admin.')->group(function () {
@@ -61,5 +63,9 @@ Route::middleware('auth')->group(function () {
         // Expenses
         Route::get('/expenses', [ReceptionController::class, 'expensesIndex'])->name('expenses.index');
         Route::post('/expenses', [ReceptionController::class, 'expensesStore'])->name('expenses.store');
+
+        // End of Day
+        Route::get('/end-of-day', [ReceptionController::class, 'endOfDay'])->name('end_of_day.create');
+        Route::post('/end-of-day', [ReceptionController::class, 'storeEndOfDay'])->name('end_of_day.store');
     });
 });

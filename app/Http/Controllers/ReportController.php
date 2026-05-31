@@ -10,10 +10,34 @@ class ReportController extends Controller
 {
     public function daily()
     {
-        $today = Carbon::today();
+        $todayStart = Carbon::today()->startOfDay();
+        $todayEnd = Carbon::today()->endOfDay();
         
+        $data = $this->getReportData($todayStart, $todayEnd);
+        $data['reportTitle'] = 'Günlük Rapor (' . Carbon::today()->format('d/m/Y') . ')';
+
+        return view('reports.daily', $data);
+    }
+
+    public function endOfDayReports()
+    {
+        $reports = \App\Models\EndOfDayReport::with('creator')->orderBy('created_at', 'desc')->get();
+        return view('admin.end_of_day_reports', compact('reports'));
+    }
+
+    public function showEndOfDayReport($id)
+    {
+        $report = \App\Models\EndOfDayReport::findOrFail($id);
+        $data = $this->getReportData($report->start_date, $report->end_date);
+        $data['reportTitle'] = $report->title;
+
+        return view('reports.daily', $data);
+    }
+
+    private function getReportData($startDate, $endDate)
+    {
         $records = MassageRecord::with(['staff', 'staff2', 'package', 'creator'])
-            ->whereDate('created_at', $today)
+            ->whereBetween('created_at', [$startDate, $endDate])
             ->get();
             
         $staffStats = [];
@@ -34,11 +58,22 @@ class ReportController extends Controller
                         $staffStats[$staffId] = [
                             'name' => $record->staff->first_name . ' ' . $record->staff->last_name,
                             'count' => 0,
-                            'premium' => 0
+                            'premium' => 0,
+                            'details' => []
                         ];
                     }
                     $staffStats[$staffId]['count'] += 1;
                     $staffStats[$staffId]['premium'] += $premiumAmount;
+
+                    $detailKey = $record->package->name . ' (' . ucfirst($record->payment_method) . ')';
+                    if (!isset($staffStats[$staffId]['details'][$detailKey])) {
+                        $staffStats[$staffId]['details'][$detailKey] = [
+                            'count' => 0,
+                            'premium' => 0
+                        ];
+                    }
+                    $staffStats[$staffId]['details'][$detailKey]['count'] += 1;
+                    $staffStats[$staffId]['details'][$detailKey]['premium'] += $premiumAmount;
                 }
 
                 // Process Staff 2
@@ -48,11 +83,22 @@ class ReportController extends Controller
                         $staffStats[$staffId2] = [
                             'name' => $record->staff2->first_name . ' ' . $record->staff2->last_name,
                             'count' => 0,
-                            'premium' => 0
+                            'premium' => 0,
+                            'details' => []
                         ];
                     }
                     $staffStats[$staffId2]['count'] += 1; // It counts as a session for them too
                     $staffStats[$staffId2]['premium'] += $premiumAmount;
+
+                    $detailKey = $record->package->name . ' (' . ucfirst($record->payment_method) . ')';
+                    if (!isset($staffStats[$staffId2]['details'][$detailKey])) {
+                        $staffStats[$staffId2]['details'][$detailKey] = [
+                            'count' => 0,
+                            'premium' => 0
+                        ];
+                    }
+                    $staffStats[$staffId2]['details'][$detailKey]['count'] += 1;
+                    $staffStats[$staffId2]['details'][$detailKey]['premium'] += $premiumAmount;
                 }
 
                 // Process Receptionist
@@ -71,15 +117,15 @@ class ReportController extends Controller
             }
         }
 
-        $todayExpenses = \App\Models\Expense::whereDate('created_at', $today)
+        $todayExpenses = \App\Models\Expense::whereBetween('created_at', [$startDate, $endDate])
             ->where('type', 'expense')
             ->sum('amount');
             
-        $todayIncomes = \App\Models\Expense::whereDate('created_at', $today)
+        $todayIncomes = \App\Models\Expense::whereBetween('created_at', [$startDate, $endDate])
             ->where('type', 'income')
             ->sum('amount');
 
-        $expensesDetails = \App\Models\Expense::whereDate('created_at', $today)
+        $expensesDetails = \App\Models\Expense::whereBetween('created_at', [$startDate, $endDate])
             ->where('type', 'expense')
             ->get();
 
@@ -89,9 +135,9 @@ class ReportController extends Controller
         $totalPremiums = collect($staffStats)->sum('premium') + collect($receptionStats)->sum('premium');
         $netCiro = $totalGrossIncome - $todayExpenses - $totalPremiums;
 
-        return view('reports.daily', compact(
+        return compact(
             'records', 'staffStats', 'receptionStats', 'totalMassages', 'totalIncome',
             'grossIncome', 'todayIncomes', 'todayExpenses', 'expensesDetails', 'totalGrossIncome', 'totalPremiums', 'netCiro'
-        ));
+        );
     }
 }
