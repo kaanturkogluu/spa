@@ -112,7 +112,7 @@
             <h3 id="modalTitle" class="text-xl font-bold text-gray-800">Yeni Masaj Kaydı</h3>
             <button onclick="document.getElementById('recordModal').classList.add('hidden')" class="text-gray-400 hover:text-gray-600"><i class="fa-solid fa-times text-xl"></i></button>
         </div>
-        <form id="recordForm" action="{{ route('reception.records.store') }}" method="POST" class="space-y-4">
+        <form id="recordForm" action="{{ route('reception.records.store') }}" method="POST" class="space-y-4" onsubmit="return disableSubmitButton(this);">
             @csrf
             <input type="hidden" name="_method" id="formMethod" value="POST">
             

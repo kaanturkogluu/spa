@@ -83,7 +83,7 @@
             </div>
         </div>
 
-        <form action="{{ route('reception.expenses.store') }}" method="POST" class="space-y-4">
+        <form action="{{ route('reception.expenses.store') }}" method="POST" class="space-y-4" onsubmit="return disableSubmitButton(this);">
             @csrf
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">İşlem Türü</label>

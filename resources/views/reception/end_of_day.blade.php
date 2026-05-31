@@ -7,7 +7,7 @@
 </div>
 
 <div class="bg-white rounded-2xl shadow-sm p-6 border border-gray-100 max-w-2xl mx-auto">
-    <form action="{{ route('reception.end_of_day.store') }}" method="POST">
+    <form action="{{ route('reception.end_of_day.store') }}" method="POST" onsubmit="return disableSubmitButton(this);">
         @csrf
         <div class="space-y-6">
             <div>

@@ -136,6 +136,17 @@
                 overlay.classList.remove('hidden');
             }
         }
+
+        function disableSubmitButton(form) {
+            const btn = form.querySelector('button[type="submit"]');
+            if (btn) {
+                if (btn.disabled) return false;
+                btn.disabled = true;
+                btn.classList.add('opacity-75', 'cursor-not-allowed');
+                btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i> Lütfen Bekleyin...';
+            }
+            return true;
+        }
     </script>
 </body>
 </html>
